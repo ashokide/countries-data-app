@@ -1,63 +1,73 @@
-// https://restcountries.eu/rest/v2/all
-
-const fetchData = async (link) => {
-    let result = await fetch(link)
-    let data = await result.json()
-    return data
-}
-let countriesData = []
-let final = []
+// async promise 
+// await wait
+let data = []
 let content = document.querySelector('#content')
-content.innerHTML = 'Loading Data ...'
-fetchData("https://restcountries.eu/rest/v2/all")
-    .then((data) => {
-        data.forEach((country) => {
-            countriesData.push(country)
-        })
-        setTimeout(() => {
-            content.innerHTML = ''
-            final = countriesData
-            final.map((e) => {
-                content.innerHTML += `
-                    <div class="card mx-2 my-2 " style="width: 18rem;">
-                    <h5 class="card-header text-center">${e.alpha2Code}</h5>
-                    <img src="${e.flag}" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">Name: ${e.name}</p>
-                        <p class="card-text">Capital: ${e.capital}</p>
-                        <p class="card-text">Region: ${e.region}</p>
-                        <p class="card-text">Sub Region: ${e.subregion}</p>
-                        <p class="card-text">Population: ${e.population}</p>
-                        <p class="card-text">Timezone: ${e.timezones}</p>
-                        <p class="card-text">Curreny Name: ${e.currencies[0].name}</p>
-                    </div>
-                </div>`
-            })
-        }, 2000)
+
+const getData = async (link) => {
+    let response = await fetch(link) //1.60s
+    let resData = await response.json()
+    return resData
+}
+
+content.innerHTML = `<div class="alert alert-success" role="alert">
+    Still Loading Wait for a Moment ...
+    </div>`
+getData("https://restcountries.eu/rest/v2/all")
+    .then((e) => {
+        data = e
+        if (data === null || data === undefined || data.length === 0) {
+            content.innerHTML = `<div class="alert alert-danger" role="alert">
+            No Data
+          </div>`
+        }
+        else {
+            putData(data.slice(0,10))
+        }
     })
-    .catch(() => console.log("something wrong"))
+    .catch((err) => {
+        console.log(err.message)
+    })
 
-
-document.querySelector('#search').addEventListener('input', (e) => {
-    final = countriesData.filter((data) => data.name.toLowerCase().startsWith(e.target.value.toLowerCase()))
+const putData = (finalData) => {
     content.innerHTML = ''
-    if (final.length === 0) {
-        content.innerHTML = 'No Data'
+    finalData.map((country) => content.innerHTML +=
+        `
+    <div class="card mx-3 my-3" style="width: 18rem;">
+        <div class="card-header text-center">
+            ${country.alpha2Code}
+        </div>
+        <img src="${country.flag}" class="card-img-top border border-secondary">
+        <div class="card-body">
+            <p class="card-title text-center">${country.name}</p>
+            <p class="card-text">Capital: ${country.capital}</p>
+            <p class="card-text">Region: ${country.region}</p>
+            <p class="card-text">Sub-Region: ${country.subregion}</p>
+            <p class="card-text">Population: ${country.population}</p>
+            <p class="card-text">Timezone: ${country.timezones}</p>
+            <p class="card-text">Currency: ${country.currencies[0].name}</p>
+        </div>
+    </div>
+    `
+    )
+}
+document.querySelector('#search').addEventListener('input', (event) => {
+    // console.log(event.target.value);
+    let finalData = data.filter((country) => country.name.toLowerCase().startsWith(event.target.value.toLowerCase()))
+    // console.log(finalData);
+    if (finalData.length === 0) {
+        content.innerHTML = `<div class="alert alert-danger" role="alert">
+        Country Not Found / Wrong User Input
+      </div>`
+    }else{
+        putData(finalData)
     }
-    final.slice(0, 25).map((e) => {
-        content.innerHTML += `
-        <div class="card mx-2 my-2 " style="width: 18rem;">
-                    <h5 class="card-header text-center">${e.alpha2Code}</h5>
-                    <img src="${e.flag}" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">Name: ${e.name}</p>
-                        <p class="card-text">Capital: ${e.capital}</p>
-                        <p class="card-text">Region: ${e.region}</p>
-                        <p class="card-text">Sub Region: ${e.subregion}</p>
-                        <p class="card-text">Population: ${e.population}</p>
-                        <p class="card-text">Timezone: ${e.timezones}</p>
-                        <p class="card-text">Curreny Name: ${e.currencies[0].name}</p>
-                    </div>
-                </div>`
-    })
+})
+const getIP = async() => {
+    let myIP = await fetch('https://api.ipify.org/?format=json')
+    let ipResult = await myIP.json()
+    return ipResult
+}
+
+getIP().then(ip=>{
+    document.querySelector('#ip').textContent = `Your IP is : ${ip.ip}`
 })
