@@ -54,7 +54,7 @@ document.querySelector('#search').addEventListener('input', (event) => {
     // console.log(event.target.value);
     let finalData = data.filter((country) => country.name.toLowerCase().startsWith(event.target.value.toLowerCase()))
     // console.log(finalData);
-    if (event.target.value === "") {
+    if (event.target.value === ''){
         finalData = finalData.slice(0,10)
     }
     if (finalData.length === 0) {
