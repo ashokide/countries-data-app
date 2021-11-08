@@ -4,7 +4,7 @@ let data = []
 let content = document.querySelector('#content')
 
 const getData = async (link) => {
-    let response = await fetch(link) //1.60s
+    let response = await fetch(link,{mode:'cors'}) //1.60s
     let resData = await response.json()
     return resData
 }
