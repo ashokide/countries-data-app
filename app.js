@@ -12,7 +12,7 @@ const getData = async (link) => {
 content.innerHTML = `<div class="alert alert-success" role="alert">
     Still Loading Wait for a Moment ...
     </div>`
-getData("https://restcountries.eu/rest/v2/all")
+getData("https://restcountries.com/v2/all")
     .then((e) => {
         data = e
         if (data === null || data === undefined || data.length === 0) {
